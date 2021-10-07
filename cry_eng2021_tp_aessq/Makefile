@@ -8,7 +8,7 @@ CFLAGS  = -g -Wall
 SOURCES := $(wildcard *.c)
 OBJECTS := $(patsubst %.c, %.o, $(SOURCES))
 # the build target executable:
-TESTPROGRAM = testRoundKey testXTimeFunction
+TESTPROGRAM = testRoundKey testXTimeFunction keyedFunction
 
 all: $(TESTPROGRAM)
 
