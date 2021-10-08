@@ -68,7 +68,7 @@ void distinguisherRightOrWrongKeyGuessed() {
     };*/
 
     uint8_t *currentBlock = malloc(sizeof(uint8_t) * AES_BLOCK_SIZE);
-    oracleRandomPermutationOrAES2(currentBlock);
+    oracleSquareAttack(currentBlock);
     
 
     //Compute all Lambda possible 

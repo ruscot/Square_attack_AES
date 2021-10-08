@@ -16,27 +16,10 @@ void keyedFunction(uint8_t k[AES_BLOCK_SIZE * 2], uint8_t block[AES_BLOCK_SIZE])
     uint8_t *saveBlock = malloc(sizeof(uint8_t) * AES_BLOCK_SIZE);
     memcpy(saveBlock, block, sizeof(uint8_t)*AES_BLOCK_SIZE+1);
 
-    int round;
-    uint8_t *next_key = malloc(sizeof(uint8_t) * AES_BLOCK_SIZE);
-    //Second compute the 3 AES round for k1 on block
-    for(round = 0; round < 3; round++){
-        aes_round(block, k1, round==3 ? 16 : 0);
-        next_aes128_round_key(k1, next_key, round);
-        for(int lengthKey = 0; lengthKey < AES_BLOCK_SIZE; lengthKey++){
-            k1[lengthKey] = next_key[lengthKey];
-            next_key[lengthKey] = 0;
-        }
-    }
+    aes128_enc(block, k1, 3, 1);
 
     //Third compute the 3 AES round for k2 on block
-    for(round = 0; round < 3; round++){
-        aes_round(saveBlock, k2, round==3 ? 16 : 0);
-        next_aes128_round_key(k2, next_key, round);
-        for(int lengthKey = 0; lengthKey < AES_BLOCK_SIZE; lengthKey++){
-            k2[lengthKey] = next_key[lengthKey];
-            next_key[lengthKey] = 0;
-        }
-    }    
+    aes128_enc(saveBlock, k2, 3, 1);
 
     //Last do xor for the two ciphered message
     for(int lengthKey = 0; lengthKey < AES_BLOCK_SIZE; lengthKey++){
@@ -46,7 +29,7 @@ void keyedFunction(uint8_t k[AES_BLOCK_SIZE * 2], uint8_t block[AES_BLOCK_SIZE])
     free(k1);
     free(k2);
     free(saveBlock);
-    free(next_key);
+    //free(next_key);
 }
 
 /**
