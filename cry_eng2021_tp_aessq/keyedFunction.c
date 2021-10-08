@@ -2,131 +2,7 @@
 #include <stdint.h>
 #include <string.h>
 #include <stdlib.h>
-#include <time.h>
-#include "aes-128_enc.h"
-#include "aes-128_enc.c"
-
-void keyedFunction(uint8_t k[AES_BLOCK_SIZE * 2], uint8_t block[AES_BLOCK_SIZE]) {
-    uint8_t *k1 = malloc(sizeof(uint8_t) * AES_BLOCK_SIZE);
-    uint8_t *k2 = malloc(sizeof(uint8_t) * AES_BLOCK_SIZE);
-    memcpy(k1, k, sizeof(uint8_t)*AES_BLOCK_SIZE+1);
-    memcpy(k2, k + sizeof(uint8_t)*AES_BLOCK_SIZE, sizeof(uint8_t)*AES_BLOCK_SIZE+1);
-    
-    //First save the clear message for the ciphering with k2
-    uint8_t *saveBlock = malloc(sizeof(uint8_t) * AES_BLOCK_SIZE);
-    memcpy(saveBlock, block, sizeof(uint8_t)*AES_BLOCK_SIZE+1);
-
-    int round;
-    uint8_t *next_key = malloc(sizeof(uint8_t) * AES_BLOCK_SIZE);
-    //Second compute the 3 AES round for k1 on block
-    for(round = 0; round < 3; round++){
-        aes_round(block, k1, round==3 ? 16 : 0);
-        next_aes128_round_key(k1, next_key, round);
-        for(int lengthKey = 0; lengthKey < AES_BLOCK_SIZE; lengthKey++){
-            k1[lengthKey] = next_key[lengthKey];
-            next_key[lengthKey] = 0;
-        }
-    }
-
-    //Third compute the 3 AES round for k2 on block
-    for(round = 0; round < 3; round++){
-        aes_round(saveBlock, k2, round==3 ? 16 : 0);
-        next_aes128_round_key(k2, next_key, round);
-        for(int lengthKey = 0; lengthKey < AES_BLOCK_SIZE; lengthKey++){
-            k2[lengthKey] = next_key[lengthKey];
-            next_key[lengthKey] = 0;
-        }
-    }    
-
-    //Last do xor for the two ciphered message
-    for(int lengthKey = 0; lengthKey < AES_BLOCK_SIZE; lengthKey++){
-        block[lengthKey] ^= saveBlock[lengthKey];
-    }
-
-    free(k1);
-    free(k2);
-    free(saveBlock);
-    free(next_key);
-}
-
-/**
- * Function take on internet 
-*/
-void randomPermutation(uint8_t k[AES_BLOCK_SIZE * 2], uint8_t block[AES_BLOCK_SIZE]) {
-    for (int i = AES_BLOCK_SIZE-1; i >= 0; --i){
-        //generate a random number between [0, AES_BLOCK_SIZE-1]
-        int j = rand() % (i+1);
-
-        //swap the last element with element at random index
-        int temp = block[i];
-        block[i] = block[j];
-        block[j] = temp;
-    }
-}
-
-void initBlockToZero(uint8_t block[AES_BLOCK_SIZE]) {
-    int index;
-    for(index = 0; index < AES_BLOCK_SIZE; index++){
-        block[index] = 0x00;
-    }
-}
-
-void distinguisher() {
-    //Key we'll used for the encryption test
-    uint8_t k[32] = {   
-        0x2b, 0x7e, 0x15, 0x16, 0x28, 0xae, 0xd2, 0xa6, 0xab, 0xf7, 0x15, 0x88, 0x09, 0xcf, 0x4f, 0x3c, 
-        0x45, 0x58, 0x0a, 0x16, 0x08, 0xa1, 0x82, 0xa6, 0x9b, 0xd7, 0x15, 0x08, 0x59, 0xbf, 0xaf, 0xbc
-    };
-    srand(time(NULL));
-    int functionUsed = rand() % 2;
-
-    //Compute all Lambda possible 
-    uint8_t *initBlock = malloc(sizeof(uint8_t) * AES_BLOCK_SIZE);
-    initBlockToZero(initBlock);
-    uint8_t *currentBlock = malloc(sizeof(uint8_t) * AES_BLOCK_SIZE);
-    uint8_t *cipheredBlock = malloc(sizeof(uint8_t) * AES_BLOCK_SIZE);
-    initBlockToZero(cipheredBlock);
-    
-
-    int lambda;//, index;
-    for(lambda = 0; lambda < 256; lambda++) {
-        memcpy(currentBlock, initBlock, sizeof(uint8_t)*AES_BLOCK_SIZE+1);
-        currentBlock[0] = lambda;
-        if(functionUsed == 1){
-            keyedFunction(k, currentBlock);
-        } else {
-            randomPermutation(k, currentBlock);
-        }
-
-        //Xor new block with last block 
-        (*cipheredBlock) ^= (*currentBlock);
-    }
-
-    printf("\nIf all bytes of the ciphered block are equal to 0\n"
-        "It means we are using 3 rounds of AES for ciphering.\n\n");
-    int index, isAES = 1;
-    for(index = 0; index < AES_BLOCK_SIZE; index++){
-        if(cipheredBlock[index] != 0){
-            isAES = 0;
-        }
-    }
-    printf("Distinguisher response : \n");
-    if(isAES == 1){
-        printf("We are using 3 rounds AES for encryption !!\n");
-    } else {
-        printf("We are using a random permutation !!\n");
-    }
-    printf("\nResponse : %d\n", functionUsed);
-    if(functionUsed == 1){
-        printf("We are using 3 rounds AES for encryption !!\n");
-    } else {
-        printf("We are using a random permutation !!\n");
-    }
-    free(currentBlock);
-    free(cipheredBlock);
-    free(initBlock);
-
-}
+#include "distinguisher.c"
 
 int main(){
     printf("\nThis program implement the keyed function F defined as below :\n"
@@ -187,7 +63,7 @@ int main(){
     x[13] = 0xb5;
     x[14] = 0x21;
     x[15] = 0x8c;
-    distinguisher();
+    distinguisherRandomPermutationOrAESEncryption();
     /*for(int i = 0; i < 16; i++){
         printf(" %d ",x[i]);
     }
