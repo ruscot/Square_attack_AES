@@ -13,17 +13,12 @@
  */
 uint8_t xtime(uint8_t p)
 {
-	//Get m equal to the biggest bit of p. m = 1 only if p has a value for X^8
 	uint8_t m = p >> 7;
 
-	//Set all bit of m equal to 0 if p multiple of X^8 or equal to 1 otherwise
 	m ^= 1;
-	//Set m equal to 255 if p is multiple of X^8 or to 0 if not
 	m -= 1;
-	//1B -> 1 1011 -> X^4 + X^3 + X + 1 set the mask m to be equal of the equation only if p not multiple of X^8
 	m &= 0x1B;
 
-	//Proceed to the exponent and applied the mask m calculate above 
 	return ((p << 1) ^ m);
 }
 
@@ -33,17 +28,12 @@ uint8_t xtime(uint8_t p)
  */
 uint8_t xtimeVariant(uint8_t p)
 {
-	//Get m equal to the biggest bit of p. m = 1 only if p has a value for X^8
 	uint8_t m = p >> 7;
 
-	//Set all bit of m equal to 0 if p multiple of X^8 or equal to 1 otherwise
 	m ^= 1;
-	//Set m equal to 255 if p is multiple of X^8 or to 0 if not
 	m -= 1;
-	//1B -> 111 1011 ->  X^6 + X^5 + X^4 + X^3 + X + 1 set the mask m to be equal of the equation only if p not multiple of X^8
 	m &= 0x7B;
 
-	//Proceed to the exponent and applied the mask m calculate above 
 	return ((p << 1) ^ m);
 }
 

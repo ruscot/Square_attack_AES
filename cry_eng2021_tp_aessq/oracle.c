@@ -16,6 +16,7 @@ void keyedFunction(uint8_t k[AES_BLOCK_SIZE * 2], uint8_t block[AES_BLOCK_SIZE])
     uint8_t *saveBlock = malloc(sizeof(uint8_t) * AES_BLOCK_SIZE);
     memcpy(saveBlock, block, sizeof(uint8_t)*AES_BLOCK_SIZE+1);
 
+    //Second compute the 3 AES round for k1 on block
     aes128_enc(block, k1, 3, 1);
 
     //Third compute the 3 AES round for k2 on block
@@ -29,7 +30,6 @@ void keyedFunction(uint8_t k[AES_BLOCK_SIZE * 2], uint8_t block[AES_BLOCK_SIZE])
     free(k1);
     free(k2);
     free(saveBlock);
-    //free(next_key);
 }
 
 /**
@@ -89,5 +89,6 @@ void oracleSquareAttack(uint8_t block[AES_BLOCK_SIZE]) {
         }
     }
 
-    aes128_enc(k, block, 4, 0);
+    aes128_enc(block, k, 4, 0);
+
 }

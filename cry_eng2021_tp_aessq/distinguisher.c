@@ -12,6 +12,13 @@ void initBlockToZero(uint8_t block[AES_BLOCK_SIZE]) {
     }
 }
 
+void initBlockToValue(uint8_t block[AES_BLOCK_SIZE], uint8_t value) {
+    int index;
+    for(index = 0; index < AES_BLOCK_SIZE; index++){
+        block[index] = value;
+    }
+}
+
 void distinguisherRandomPermutationOrAESEncryption() {
     //Key we'll used for the encryption test
     uint8_t k[32] = {   
