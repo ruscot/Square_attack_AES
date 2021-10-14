@@ -97,6 +97,12 @@ void aes_round(uint8_t block[AES_BLOCK_SIZE], uint8_t round_key[AES_BLOCK_SIZE],
 	{
 		block[i] ^= round_key[i];
 	}
+
+	/*printf("\nIn aes_round block : \n");
+	for(i = 0; i < 16; i++) {
+		printf("%d ", block[i]);
+	}
+	printf("\n");*/
 }
 
 /*
@@ -174,4 +180,9 @@ void aes128_enc(uint8_t block[AES_BLOCK_SIZE], const uint8_t key[AES_128_KEY_SIZ
 	{
 		aes_round(block, ekey + nk, 16);
 	}
+	/*printf("\nLast key used\n");
+	for(i = 0; i < 16; i++) {
+		printf("%d ", ekey[i + nk]);
+	}
+	printf("\n");*/
 }

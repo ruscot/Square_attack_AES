@@ -208,5 +208,51 @@ int main(){
     free(next_key);
     free(prev_key_test);
     free(prev_key);
+    /*int i, j;
+    printf("\nThis program implement the square attack on 3 rounds and 1/2 AES encryption\n");
+	uint8_t k[16] = {   
+        0x2b, 0x7e, 0x15, 0x16, 0x28, 0xae, 0xd2, 0xa6, 0xab, 0xf7, 0x15, 0x88, 0x09, 0xcf, 0x4f, 0x3c
+    };
+    uint8_t *allCipheredMessage = malloc(sizeof(uint8_t) * 16 * 256);
+	uint8_t *save_k = malloc(sizeof(uint8_t) * 16 * 256);
+	uint8_t *k_to_guess = malloc(sizeof(uint8_t) * 16 * 256);
+	for(i = 0; i < 16; i++) {
+		save_k[i] = k[i];
+	}
+    //Initialize allCipheredMessage to 0
+
+	printf("\nK the key we'll use :\n");
+	for(i = 0; i < 16; i++) {
+		printf("%d ", k[i]);
+	}
+	printf("\n");
+	for(i = 0; i < 256; i++){
+        initBlockToZero(allCipheredMessage + 16 * i);
+		allCipheredMessage[16*i] = i;
+        //oracleSquareAttack(allCipheredMessage + 16 * i);
+		aes128_enc(allCipheredMessage + 16 * i, k, 4, 0);
+		break;
+    }
+	printf("\nLast allCipheredMessage : \n");
+	for(i = 0; i < 16; i++) {
+		printf("%d ", allCipheredMessage[i]);
+	}
+	printf("\n");
+	next_aes128_round_key(save_k, k, 0);
+	next_aes128_round_key(k, k_to_guess, 1);
+	next_aes128_round_key(k_to_guess, k, 2);
+	next_aes128_round_key(k, k_to_guess, 3);
+	printf("\nk_to_guess calculated : \n");
+	for(i = 0; i < 16; i++) {
+		printf("%d ", k_to_guess[i]);
+	}
+	printf("\n");
+
+	aesDemiTurnBackward(allCipheredMessage, k_to_guess, 3);
+	printf("\nBlock calculated : \n");
+	for(i = 0; i < 16; i++) {
+		printf("%d ", allCipheredMessage[i]);
+	}
+	printf("\n");*/
     return 0;
 }
