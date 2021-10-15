@@ -180,9 +180,8 @@ void aes128_enc(uint8_t block[AES_BLOCK_SIZE], const uint8_t key[AES_128_KEY_SIZ
 	{
 		aes_round(block, ekey + nk, 16);
 	}
-	/*printf("\nLast key used\n");
-	for(i = 0; i < 16; i++) {
-		printf("%d ", ekey[i + nk]);
-	}
-	printf("\n");*/
+	/*printf("Last key enc\n");
+	for(i = 0; i < 16; i++){
+		printf("%d ", ekey[nk + i]);
+	}*/
 }

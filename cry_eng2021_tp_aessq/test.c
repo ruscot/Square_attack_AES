@@ -7,7 +7,7 @@
 /**
  * For a given block on a given key compute the following operation ARK + SR + SB + ARK
 */
-void aesDemiTurnBackward(uint8_t block[AES_BLOCK_SIZE], uint8_t round_key[AES_BLOCK_SIZE], uint8_t previous_turn) {
+void aesDemiTurnBackward(uint8_t block[AES_BLOCK_SIZE], uint8_t round_key[AES_BLOCK_SIZE]) {
     int i;
 	uint8_t tmp;
 
@@ -56,9 +56,7 @@ void aesDemiTurnBackward(uint8_t block[AES_BLOCK_SIZE], uint8_t round_key[AES_BL
 	for (i = 0; i < 16; i++)
 	{
 		block[i] ^= prev_key[i];
-	}
-
-	free(prev_key);*/
+	}*/
 }
 
 int main(){
@@ -106,18 +104,20 @@ int main(){
 		printf("\nKey %d :\n", n);
 		for(i = 0; i < 256; i++){
 			initBlockToZero(guess_k);
-			guess_k[n] = i;
+			guess_k[1] = 68;
 			initBlockToZero(xor_block);
 			for(j = 0; j < 256; j++){
 				memcpy(current_block, allCipheredMessage + j * 16, sizeof(uint8_t) * 16);
-				aesDemiTurnBackward(current_block, guess_k, 3);
-				xor_block[n] ^= current_block[n];
+				aesDemiTurnBackward(current_block, guess_k);
+				xor_block[5] ^= current_block[5];
 			}
-			if(xor_block[n] == 0){
-				printf("%d ", i);
+			if(xor_block[5] == 0){
+				printf("%d ", 68);
 				//break;
 			}
+            break;
 		}
+        break;
     }
 
     free(allCipheredMessage);
