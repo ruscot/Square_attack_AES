@@ -83,10 +83,15 @@ void oracleSquareAttack(uint8_t block[AES_BLOCK_SIZE]) {
         fp = fopen("/dev/urandom", "r");
         fread(&data, 1, AES_128_KEY_SIZE * 8, fp);
         fclose(fp);
-
-        for(int i = 0; i < AES_128_KEY_SIZE; i++) {
+        int i;
+        for(i = 0; i < AES_128_KEY_SIZE; i++) {
             k[i] = (uint8_t) data[i];
         }
+        printf("\nKey k to retrieve :\n");
+        for(i = 0; i < AES_128_KEY_SIZE; i++) {
+            printf("%d ", k[i]);
+        }
+        printf("\n");
     }
 
     aes128_enc(block, k, 4, 0);

@@ -3,6 +3,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include "distinguisher.c"
+#include "struct_function.c"
 
 /**
  * For a given block on a given key compute the following operation ARK + SR + SB + ARK
@@ -18,9 +19,6 @@ void aesDemiTurnBackward(uint8_t block[AES_BLOCK_SIZE], uint8_t round_key[AES_BL
 	{
 		block[i] ^= round_key[i];
 	}
-
-    //uint8_t* prev_key = malloc(sizeof(uint8_t) * 16);
-    //prev_aes128_round_key(round_key, prev_key, previous_turn);
 
 	/*
 	 * SubBytes + ShiftRow
@@ -49,19 +47,13 @@ void aesDemiTurnBackward(uint8_t block[AES_BLOCK_SIZE], uint8_t round_key[AES_BL
     block[ 3] = Sinv[block[ 7]];
     block[ 7] = Sinv[block[11]];
     block[11] = Sinv[tmp];
-    
-	/*
-	 * AddRoundKey
-	 *//*
-	for (i = 0; i < 16; i++)
-	{
-		block[i] ^= prev_key[i];
-	}*/
 }
 
 int main(){
 	int i, j, n;
     printf("\nThis program implement the square attack on 3 rounds and 1/2 AES encryption\n");
+	head_list *list_key_byte_head = malloc(sizeof(head_list));
+	init_list_byte(list_key_byte_head);
 	uint8_t k[16] = {   
         0x2b, 0x7e, 0x15, 0x16, 0x28, 0xae, 0xd2, 0xa6, 0xab, 0xf7, 0x15, 0x88, 0x09, 0xcf, 0x4f, 0x3c
     };
@@ -76,7 +68,7 @@ int main(){
 	printf("\nK the key we'll use :\n");
 	for(i = 0; i < 256; i++) {
         initBlockToZero(allCipheredMessage + 16 * i);
-		allCipheredMessage[16*i ] = i;
+		allCipheredMessage[16*i + 2] = i ;
         //oracleSquareAttack(allCipheredMessage + 16 * i);
 		aes128_enc(allCipheredMessage + 16 * i, k, 4, 0);
     }
@@ -100,27 +92,29 @@ int main(){
 	uint8_t *current_block = malloc(sizeof(uint8_t) * 16);
 	uint8_t *guess_k = malloc(sizeof(uint8_t) * 16);
 
+	uint8_t correspondingBytes[16] ={0, 5, 10, 15, 4, 9, 14, 3, 8, 13, 2, 7, 12, 1, 6, 11};
 	for(n = 0; n < 16; n++){
-		printf("\nKey %d :\n", n);
+		//printf("\nKey %d :\n", n);
 		for(i = 0; i < 256; i++){
 			initBlockToZero(guess_k);
-			guess_k[3] = 65;
+			guess_k[n] = i;
 			initBlockToZero(xor_block);
 			for(j = 0; j < 256; j++){
 				memcpy(current_block, allCipheredMessage + j * 16, sizeof(uint8_t) * 16);
 				aesDemiTurnBackward(current_block, guess_k);
-				xor_block[15] ^= current_block[15];
+				xor_block[correspondingBytes[n]] ^= current_block[correspondingBytes[n]];
 			}
-			if(xor_block[15] == 0){
-				printf("%d ", 68);
-				//break;
+			if(xor_block[correspondingBytes[n]] == 0){
+				//printf("%d ", i);
+				add_byte_if_not_in(n, i, list_key_byte_head);
 			}
-            break;
 		}
-        break;
+		check_byte_found_right_value(list_key_byte_head, n);
     }
-
-    free(allCipheredMessage);
+	print_head_list(list_key_byte_head);
+    
+	
+	free(allCipheredMessage);
 	free(xor_block);
 	free(current_block);
 	free(guess_k);
