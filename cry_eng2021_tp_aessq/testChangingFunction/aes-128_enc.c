@@ -84,10 +84,10 @@ void aes_round(uint8_t block[AES_BLOCK_SIZE], uint8_t round_key[AES_BLOCK_SIZE],
 		uint8_t tmp2 = column[0];
 		tmp = column[0] ^ column[1] ^ column[2] ^ column[3];
 
-		column[0] ^= tmp ^ xtime(column[0] ^ column[1]);
-		column[1] ^= tmp ^ xtime(column[1] ^ column[2]);
-		column[2] ^= tmp ^ xtime(column[2] ^ column[3]);
-		column[3] ^= tmp ^ xtime(column[3] ^ tmp2);
+		column[0] ^= tmp ^ xtimeVariant(column[0] ^ column[1]);
+		column[1] ^= tmp ^ xtimeVariant(column[1] ^ column[2]);
+		column[2] ^= tmp ^ xtimeVariant(column[2] ^ column[3]);
+		column[3] ^= tmp ^ xtimeVariant(column[3] ^ tmp2);
 	}
 
 	/*
