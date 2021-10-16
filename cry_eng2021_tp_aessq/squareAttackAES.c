@@ -51,13 +51,17 @@ void aesDemiTurnBackward(uint8_t block[AES_BLOCK_SIZE], uint8_t round_key[AES_BL
 
 void retrieveKey() {
     int i, j, n, nb_round;
+    //Head of our linked list to get all byte of the unknown key
     head_list *list_key_byte_head = malloc(sizeof(head_list));
 	init_list_byte(list_key_byte_head);
+    //Our A-set
     uint8_t *allCipheredMessage = malloc(sizeof(uint8_t) * 16 * 256);
+    //Current_round : 1 round for 1 A-set
     nb_round = 0;
     uint8_t *xor_block = malloc(sizeof(uint8_t) * 16);
 	uint8_t *current_block = malloc(sizeof(uint8_t) * 16);
 	uint8_t *guess_k = malloc(sizeof(uint8_t) * 16);
+    //For each byte of the key guessed give the byte to xor to check if the sum is equal to 0
 	uint8_t correspondingBytes[16] ={0, 5, 10, 15, 4, 9, 14, 3, 8, 13, 2, 7, 12, 1, 6, 11};
     while(check_all_byte_found(list_key_byte_head) == 0 && nb_round < 16){
         for(i = 0; i < 256; i++) {
@@ -70,9 +74,9 @@ void retrieveKey() {
 
         for(n = 0; n < 16; n++){
             if(check_one_byte_founc(list_key_byte_head, n) == 1){
+                //We already have found the byte n of the key
                 continue;
             }
-
             for(i = 0; i < 256; i++){
                 initBlockToZero(guess_k);
                 guess_k[n] = i;
@@ -88,26 +92,23 @@ void retrieveKey() {
                     } else {
                         other_turn_set_in_list(n, i, list_key_byte_head);
                     }
-                    
                 }
             }
             remove_all_byte_not_in_turn(n, list_key_byte_head);
             check_byte_found_right_value(list_key_byte_head, n);
         }
-        
-
         nb_round++;
     }
     print_head_list(list_key_byte_head);
     put_guess_byte_in_key(list_key_byte_head, guess_k);
     uint8_t *k = malloc(sizeof(uint8_t) * 16);
-
+    //Retrieve the correct key
     prev_aes128_round_key(guess_k, k, 3);
     prev_aes128_round_key(k, guess_k, 2);
     prev_aes128_round_key(guess_k, k, 1);
     prev_aes128_round_key(k, guess_k, 0);
 	
-    printf("\nKey guessed : \n");
+    printf("\nKey guessed with the retrieve function: \n");
 	for(i = 0; i < 16; i++){
         printf("%d ", guess_k[i]);
     }

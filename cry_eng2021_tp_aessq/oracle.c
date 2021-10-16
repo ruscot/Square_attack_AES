@@ -87,7 +87,7 @@ void oracleSquareAttack(uint8_t block[AES_BLOCK_SIZE]) {
         for(i = 0; i < AES_128_KEY_SIZE; i++) {
             k[i] = (uint8_t) data[i];
         }
-        printf("\nKey k to retrieve :\n");
+        printf("\nKey k known only by the oracle we are trying to retrieve :\n");
         for(i = 0; i < AES_128_KEY_SIZE; i++) {
             printf("%d ", k[i]);
         }
